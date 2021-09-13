@@ -49,48 +49,21 @@ public class SpellCorrector implements ISpellCorrector{
         for(char i = 'a'; i < 'z'+1; i++){ // I might need to swap these two for loops to be alphabetical
             for(int j = 0; j < word.length(); j++){
                 word.setCharAt(j, i);
-                if(trie.find(word.toString()) != null && trie.find(word.toString()).getValue() > 0){
-                    INode newWord = trie.find(word.toString());
-                    if(bestWord == null || bestWord.getValue() <= newWord.getValue()){
-                        bestWord = newWord;
-                        bestWordStr = word.toString();
-                    }
-                }
-                if(firstCheck){
-                    wordTries.add(word);
-                }
+                tryWord(word);
                 word = new StringBuilder(originalWord);
             }
         }
         //Try deletion
         for(int i = 0; i < word.length(); i++){
             word.deleteCharAt(i);
-            if(trie.find(word.toString()) != null && trie.find(word.toString()).getValue() > 0){
-                INode newWord = trie.find(word.toString());
-                if(bestWord == null || bestWord.getValue() < newWord.getValue()){
-                    bestWord = newWord;
-                    bestWordStr = word.toString();
-                }
-            }
-            if(firstCheck){
-                wordTries.add(word);
-            }
+            tryWord(word);
             word = new StringBuilder(originalWord);
         }
         //Add chars at each index
         for(int i = 0; i <= word.length(); i++){
             for(char j = 'a'; j <= 'z'; j++){
                 word.insert(i,j);
-                if(trie.find(word.toString()) != null && trie.find(word.toString()).getValue() > 0){
-                    INode newWord = trie.find(word.toString());
-                    if(bestWord == null || bestWord.getValue() < newWord.getValue()){
-                        bestWord = newWord;
-                        bestWordStr = word.toString();
-                    }
-                }
-                if(firstCheck){
-                    wordTries.add(word);
-                }
+                tryWord(word);
                 word = new StringBuilder(originalWord);
             }
 
@@ -100,18 +73,21 @@ public class SpellCorrector implements ISpellCorrector{
             char swapper = word.charAt(i);
             word.setCharAt(i, word.charAt(i+1));
             word.setCharAt(i+1, swapper);
-            if(trie.find(word.toString()) != null && trie.find(word.toString()).getValue() > 0) {
-                INode newWord = trie.find(word.toString());
-                if (bestWord == null || bestWord.getValue() < newWord.getValue()) {
-                    bestWord = newWord;
-                    bestWordStr = word.toString();
-                }
-            }
-            if(firstCheck){
-                wordTries.add(word);
-            }
+            tryWord(word);
             word = new StringBuilder(originalWord);
         }
 
+    }
+    private void tryWord(StringBuilder word){
+        if(trie.find(word.toString()) != null && trie.find(word.toString()).getValue() > 0){
+            INode newWord = trie.find(word.toString());
+            if(bestWord == null || bestWord.getValue() <= newWord.getValue()){
+                bestWord = newWord;
+                bestWordStr = word.toString();
+            }
+        }
+        if(firstCheck){
+            wordTries.add(word);
+        }
     }
 }
